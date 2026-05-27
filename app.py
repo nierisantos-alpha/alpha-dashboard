@@ -2,8 +2,8 @@ import os, json, uuid, requests
 from flask import Flask, render_template, request, jsonify, redirect, abort
 
 app = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
-CLIENTS_FILE   = "clients.json"
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "alpha@2024")
+CLIENTS_FILE    = "clients.json"
+ADMIN_PASSWORD  = os.environ.get("ADMIN_PASSWORD", "alpha@2024")
 WINDSOR_API_KEY = os.environ.get("WINDSOR_API_KEY", "")
 
 def load_clients():
@@ -65,10 +65,12 @@ def api_data(token):
     df         = request.args.get("date_from","")
     dt         = request.args.get("date_to","")
 
-    fields = "date,campaign,account_status,spend,impressions,reach,clicks,purchases,purchase_roas,cost_per_conversion"
+    # campos compatíveis com plano Basic do Windsor
+    fields = "date,campaign,spend,impressions,reach,clicks"
+
     params = {
-        "api_key": WINDSOR_API_KEY,
-        "fields":  fields,
+        "api_key":    WINDSOR_API_KEY,
+        "fields":     fields,
         "account_id": account_id
     }
     if df and dt:
