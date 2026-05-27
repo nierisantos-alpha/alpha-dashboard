@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#F5A623"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Alpha Ads"/>
+<link rel="manifest" href="/manifest.json"/>
+<link rel="apple-touch-icon" href="/static/icons/icon-192.png"/>
+<title>{{ nome }} — Alpha Dashboard</title>
+<link rel="stylesheet" href="/static/css/app.css"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  window.__TOKEN__  = "{{ token }}";
+  window.__PERIODO__= "{{ periodo }}";
+</script>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <svg class="topbar-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100" height="100" rx="20" fill="#1a1a1a"/>
+      <polygon points="18,78 50,18 63,42 37,42 50,66 76,18 88,42 50,82" fill="#F5A623"/>
+    </svg>
+    <div class="topbar-info">
+      <div class="topbar-agency">Assessoria Alpha · Nieri Santos &amp; Com</div>
+      <div class="topbar-client">{{ nome }}</div>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn-icon" id="refreshBtn" onclick="loadData()" title="Atualizar">↺</button>
+    </div>
+  </div>
+
+  <!-- PERIOD TABS -->
+  <div class="period-bar">
+    <button class="ptab" data-preset="last_7d"    onclick="setPreset('last_7d',this)">7 dias</button>
+    <button class="ptab" data-preset="last_14d"   onclick="setPreset('last_14d',this)">14 dias</button>
+    <button class="ptab active" data-preset="last_30d" onclick="setPreset('last_30d',this)">30 dias</button>
+    <button class="ptab" data-preset="this_month" onclick="setPreset('this_month',this)">Este mês</button>
+    <button class="ptab" data-preset="last_90d"   onclick="setPreset('last_90d',this)">90 dias</button>
+    <button class="ptab" id="tabCustom"            onclick="setPreset('custom',this)">✏ Período</button>
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area">
+    <div class="inner">
+
+      <!-- install banner -->
+      <div class="install-banner" id="installBanner" style="display:none">
+        <div class="ib-icon">📲</div>
+        <div class="ib-text">
+          <div class="ib-title">Instalar como app</div>
+          <div class="ib-sub">Acesse mais rápido direto da tela inicial</div>
+        </div>
+        <button class="btn-gold" style="height:32px;padding:0 12px;font-size:12px" onclick="installApp()">Instalar</button>
+        <button class="ib-close" onclick="dismissInstall()">×</button>
+      </div>
+
+      <!-- loading -->
+      <div id="loadingState" class="state-wrap">
+        <div class="spinner"></div>
+        <div class="state-msg">Buscando dados do Meta Ads…</div>
+      </div>
+
+      <!-- error -->
+      <div id="errBox" class="err-box" style="display:none">
+        <div class="err-title" id="errTitle">Erro</div>
+        <div class="err-msg" id="errMsg"></div>
+      </div>
+
+      <!-- content -->
+      <div id="contentArea" style="display:none">
+
+        <!-- period label -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px">
+          <div style="font-size:14px;font-weight:700;color:var(--text)" id="periodLabel"></div>
+          <div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px">
+            <span class="dot-live"></span>
+            <span>Atualizado às <span id="lastUpd"></span></span>
+          </div>
+        </div>
+
+        <!-- metrics -->
+        <div class="metrics" id="metricsGrid"></div>
+
+        <!-- charts -->
+        <div class="charts">
+          <div class="card">
+            <div class="card-title">Investimento diário</div>
+            <div style="position:relative;height:180px">
+              <canvas id="spendChart"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">Compras por dia</div>
+            <div style="position:relative;height:180px">
+              <canvas id="purchChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- campaigns -->
+        <div class="camp-card">
+          <div class="camp-header">
+            <div class="card-title" style="margin:0">Campanhas</div>
+            <div style="font-size:11px;color:var(--muted)" id="campCount"></div>
+          </div>
+          <div class="camp-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Campanha</th><th>Status</th><th>Investido</th>
+                  <th>Alcance</th><th>Impressões</th><th>Cliques</th>
+                  <th>CTR</th><th>CPM</th><th>CPC</th>
+                  <th>Compras</th><th>Custo/Compra</th><th>ROAS</th>
+                </tr>
+              </thead>
+              <tbody id="campBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div><!-- /contentArea -->
+    </div><!-- /inner -->
+  </div><!-- /scroll-area -->
+
+  <!-- BOTTOM BAR -->
+  <div class="bottomnav">
+    <div class="bnav-info">
+      <span class="dot-live"></span>
+      <span>Meta Ads · Windsor.ai</span>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- DATE MODAL -->
+<div class="modal-bg" id="dateModal" onclick="if(event.target===this)closeDateModal()">
+  <div class="modal">
+    <div class="modal-title">Escolher período</div>
+    <label>Data inicial</label>
+    <input type="date" id="mDateFrom"/>
+    <label>Data final</label>
+    <input type="date" id="mDateTo"/>
+    <div class="modal-actions">
+      <button class="btn-outline" onclick="closeDateModal()">Cancelar</button>
+      <button class="btn-gold" style="flex:1;height:44px;font-size:14px" onclick="applyCustomDate()">Aplicar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

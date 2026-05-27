@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Admin — Assessoria Alpha</title>
+<style>
+:root{--gold:#F5A623;--gold2:#d4891c;--dark:#0d0d0d;--d2:#111;--d3:#161616;--d4:#1c1c1c;--d5:#222;--border:#252525;--border2:#2e2e2e;--text:#f0f0f0;--muted:#777;--r:14px;--rs:9px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--dark);color:var(--text);min-height:100vh}
+header{background:var(--d2);border-bottom:1px solid var(--border);padding:0 20px;height:60px;display:flex;align-items:center;gap:12px}
+.logo{width:36px;height:36px;flex-shrink:0}
+.ht .ha{font-size:10px;color:var(--muted);letter-spacing:.4px;text-transform:uppercase}
+.ht .hb{font-size:15px;font-weight:700;color:var(--gold)}
+.spacer{flex:1}
+.badge{font-size:11px;background:rgba(245,166,35,.15);color:var(--gold);border:1px solid rgba(245,166,35,.3);padding:4px 12px;border-radius:99px;font-weight:600}
+main{max-width:860px;margin:2rem auto;padding:0 14px 4rem}
+.card{background:var(--d3);border:1px solid var(--border);border-radius:var(--r);padding:1.5rem;margin-bottom:1.25rem}
+.ct{font-size:12px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.6px;margin-bottom:1.25rem}
+label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px;font-weight:600;letter-spacing:.3px}
+input,select{width:100%;height:42px;background:var(--d4);border:1px solid var(--border2);border-radius:var(--rs);padding:0 12px;font-size:13px;color:var(--text);outline:none;transition:border .2s;margin-bottom:14px}
+input:focus,select:focus{border-color:var(--gold)}
+select option{background:var(--d4)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>div{flex:1;min-width:160px}
+.row .bw{display:flex;align-items:flex-end;padding-bottom:14px}
+.btn{height:42px;padding:0 20px;border-radius:var(--rs);border:none;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.bg{background:var(--gold);color:#000}.bg:hover{background:var(--gold2)}.bg:active{transform:scale(.97)}
+.br{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25);height:34px;padding:0 14px;font-size:12px}.br:hover{background:rgba(239,68,68,.22)}
+.ale{padding:11px 15px;border-radius:var(--rs);font-size:13px;margin-bottom:1rem}
+.ae{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+.ao{background:rgba(245,166,35,.1);color:var(--gold);border:1px solid rgba(245,166,35,.2)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--muted);font-weight:600;padding:8px 12px;border-bottom:1px solid var(--border);font-size:10px;text-transform:uppercase;letter-spacing:.5px}
+td{padding:12px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(255,255,255,.02)}
+.lbox{display:flex;align-items:center;gap:8px;background:var(--d4);border:1px solid var(--border2);border-radius:7px;padding:6px 10px}
+.lt{font-size:11px;color:var(--muted);font-family:monospace;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cb{font-size:11px;padding:4px 10px;background:rgba(245,166,35,.12);color:var(--gold);border:1px solid rgba(245,166,35,.25);border-radius:6px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.cb:hover{background:rgba(245,166,35,.22)}
+.empty{text-align:center;color:var(--muted);padding:2rem;font-size:13px}
+.ptag{font-size:11px;background:rgba(255,255,255,.06);color:var(--muted);padding:3px 9px;border-radius:99px}
+.cn{font-weight:600}
+/* login */
+.lw{max-width:380px;margin:4rem auto}
+.lw .card{padding:2rem}
+.ll{text-align:center;margin-bottom:1.5rem}
+.lb{font-size:18px;font-weight:800;color:var(--gold);letter-spacing:.5px;margin-top:10px}
+.ls{font-size:12px;color:var(--muted);margin-top:2px}
+</style>
+</head>
+<body>
+{% if not autenticado %}
+<div class="lw">
+  <div class="card">
+    <div class="ll">
+      <svg width="54" height="54" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="#1a1a1a"/><polygon points="18,78 50,18 63,42 37,42 50,66 76,18 88,42 50,82" fill="#F5A623"/></svg>
+      <div class="lb">Assessoria Alpha</div>
+      <div class="ls">Nieri Santos &amp; Com — Admin</div>
+    </div>
+    {% if erro %}<div class="ale ae">{{ erro }}</div>{% endif %}
+    <form method="POST" action="/admin">
+      <label>Senha de administrador</label>
+      <input type="password" name="senha" placeholder="••••••••" autofocus/>
+      <button class="btn bg" style="width:100%">Entrar</button>
+    </form>
+  </div>
+</div>
+{% else %}
+<header>
+  <svg class="logo" viewBox="0 0 100 100"><rect width="100" height="100" rx="18" fill="#1a1a1a"/><polygon points="18,78 50,18 63,42 37,42 50,66 76,18 88,42 50,82" fill="#F5A623"/></svg>
+  <div class="ht"><div class="ha">Assessoria Alpha · Nieri Santos &amp; Com</div><div class="hb">Painel Admin</div></div>
+  <div class="spacer"></div>
+  <div class="badge">⚙ Admin</div>
+</header>
+<main>
+  {% if erro %}<div class="ale ae">⚠ {{ erro }}</div>{% endif %}
+  {% if sucesso %}<div class="ale ao">✓ {{ sucesso }}</div>{% endif %}
+
+  <div class="card">
+    <div class="ct">➕ Novo cliente</div>
+    <form method="POST" action="/admin/add">
+      <input type="hidden" name="senha" value="{{ request.form.get('senha','') }}"/>
+      <div class="row">
+        <div><label>Nome do cliente</label><input type="text" name="nome" placeholder="Ex: Loja da Maria" required/></div>
+        <div><label>API Key Windsor.ai</label><input type="text" name="api_key" placeholder="f72719bcab524154b1141e..." required/></div>
+      </div>
+      <div class="row">
+        <div>
+          <label>Período padrão</label>
+          <select name="periodo">
+            <option value="last_7d">Últimos 7 dias</option>
+            <option value="last_14d">Últimos 14 dias</option>
+            <option value="last_30d" selected>Últimos 30 dias</option>
+            <option value="this_month">Este mês</option>
+            <option value="last_90d">Últimos 90 dias</option>
+          </select>
+        </div>
+        <div class="bw"><button class="btn bg" type="submit">Gerar link do cliente</button></div>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <div class="ct">👥 Clientes ({{ clientes|length }})</div>
+    {% if clientes %}
+    <table>
+      <thead><tr><th>Cliente</th><th>Período</th><th>Link exclusivo</th><th></th></tr></thead>
+      <tbody>
+      {% for token, c in clientes.items() %}
+      <tr>
+        <td><span class="cn">{{ c.nome }}</span></td>
+        <td><span class="ptag">{{ c.periodo }}</span></td>
+        <td>
+          <div class="lbox">
+            <span class="lt">/c/{{ token }}</span>
+            <button class="cb" onclick="copyLink('{{ token }}')">Copiar link</button>
+          </div>
+        </td>
+        <td>
+          <form method="POST" action="/admin/delete/{{ token }}" onsubmit="return confirm('Remover {{ c.nome }}?')">
+            <input type="hidden" name="senha" value="{{ request.form.get('senha','') }}"/>
+            <button class="btn br" type="submit">Remover</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty">Nenhum cliente ainda. Use o formulário acima.</div>
+    {% endif %}
+  </div>
+</main>
+<script>
+function copyLink(token){
+  const url=window.location.origin+'/c/'+token;
+  navigator.clipboard.writeText(url).then(()=>{
+    const b=event.target; b.textContent='✓ Copiado!';
+    setTimeout(()=>b.textContent='Copiar link',2200);
+  });
+}
+</script>
+{% endif %}
+</body>
+</html>
