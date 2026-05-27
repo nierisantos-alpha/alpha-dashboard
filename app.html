@@ -7,20 +7,17 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Alpha Ads"/>
-<link rel="manifest" href="/manifest.json"/>
-<link rel="apple-touch-icon" href="/icon-192.png"/>
 <title>{{ nome }} — Alpha Dashboard</title>
-<link rel="stylesheet" href="/app.css"/>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script>
-  window.__TOKEN__  = "{{ token }}";
-  window.__PERIODO__= "{{ periodo }}";
-</script>
+<script>window.__TOKEN__="{{ token }}";window.__PERIODO__="{{ periodo }}";</script>
+<style>
+CSSEOF
+echo "$CSS" >> /mnt/user-data/outputs/app.html
+cat >> /mnt/user-data/outputs/app.html << 'HTMLEOF'
+</style>
 </head>
 <body>
 <div id="app">
-
-  <!-- TOP BAR -->
   <div class="topbar">
     <svg class="topbar-logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
       <rect width="100" height="100" rx="20" fill="#1a1a1a"/>
@@ -34,22 +31,16 @@
       <button class="btn-icon" id="refreshBtn" onclick="loadData()" title="Atualizar">↺</button>
     </div>
   </div>
-
-  <!-- PERIOD TABS -->
   <div class="period-bar">
-    <button class="ptab" data-preset="last_7d"    onclick="setPreset('last_7d',this)">7 dias</button>
-    <button class="ptab" data-preset="last_14d"   onclick="setPreset('last_14d',this)">14 dias</button>
+    <button class="ptab" data-preset="last_7d" onclick="setPreset('last_7d',this)">7 dias</button>
+    <button class="ptab" data-preset="last_14d" onclick="setPreset('last_14d',this)">14 dias</button>
     <button class="ptab active" data-preset="last_30d" onclick="setPreset('last_30d',this)">30 dias</button>
     <button class="ptab" data-preset="this_month" onclick="setPreset('this_month',this)">Este mês</button>
-    <button class="ptab" data-preset="last_90d"   onclick="setPreset('last_90d',this)">90 dias</button>
-    <button class="ptab" id="tabCustom"            onclick="setPreset('custom',this)">✏ Período</button>
+    <button class="ptab" data-preset="last_90d" onclick="setPreset('last_90d',this)">90 dias</button>
+    <button class="ptab" id="tabCustom" onclick="setPreset('custom',this)">✏ Período</button>
   </div>
-
-  <!-- SCROLL AREA -->
   <div class="scroll-area">
     <div class="inner">
-
-      <!-- install banner -->
       <div class="install-banner" id="installBanner" style="display:none">
         <div class="ib-icon">📲</div>
         <div class="ib-text">
@@ -59,23 +50,15 @@
         <button class="btn-gold" style="height:32px;padding:0 12px;font-size:12px" onclick="installApp()">Instalar</button>
         <button class="ib-close" onclick="dismissInstall()">×</button>
       </div>
-
-      <!-- loading -->
       <div id="loadingState" class="state-wrap">
         <div class="spinner"></div>
         <div class="state-msg">Buscando dados do Meta Ads…</div>
       </div>
-
-      <!-- error -->
       <div id="errBox" class="err-box" style="display:none">
         <div class="err-title" id="errTitle">Erro</div>
         <div class="err-msg" id="errMsg"></div>
       </div>
-
-      <!-- content -->
       <div id="contentArea" style="display:none">
-
-        <!-- period label -->
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px">
           <div style="font-size:14px;font-weight:700;color:var(--text)" id="periodLabel"></div>
           <div style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px">
@@ -83,27 +66,17 @@
             <span>Atualizado às <span id="lastUpd"></span></span>
           </div>
         </div>
-
-        <!-- metrics -->
         <div class="metrics" id="metricsGrid"></div>
-
-        <!-- charts -->
         <div class="charts">
           <div class="card">
             <div class="card-title">Investimento diário</div>
-            <div style="position:relative;height:180px">
-              <canvas id="spendChart"></canvas>
-            </div>
+            <div style="position:relative;height:180px"><canvas id="spendChart"></canvas></div>
           </div>
           <div class="card">
             <div class="card-title">Compras por dia</div>
-            <div style="position:relative;height:180px">
-              <canvas id="purchChart"></canvas>
-            </div>
+            <div style="position:relative;height:180px"><canvas id="purchChart"></canvas></div>
           </div>
         </div>
-
-        <!-- campaigns -->
         <div class="camp-card">
           <div class="camp-header">
             <div class="card-title" style="margin:0">Campanhas</div>
@@ -111,34 +84,26 @@
           </div>
           <div class="camp-scroll">
             <table>
-              <thead>
-                <tr>
-                  <th>Campanha</th><th>Status</th><th>Investido</th>
-                  <th>Alcance</th><th>Impressões</th><th>Cliques</th>
-                  <th>CTR</th><th>CPM</th><th>CPC</th>
-                  <th>Compras</th><th>Custo/Compra</th><th>ROAS</th>
-                </tr>
-              </thead>
+              <thead><tr>
+                <th>Campanha</th><th>Status</th><th>Investido</th>
+                <th>Alcance</th><th>Impressões</th><th>Cliques</th>
+                <th>CTR</th><th>CPM</th><th>CPC</th>
+                <th>Compras</th><th>Custo/Compra</th><th>ROAS</th>
+              </tr></thead>
               <tbody id="campBody"></tbody>
             </table>
           </div>
         </div>
-
-      </div><!-- /contentArea -->
-    </div><!-- /inner -->
-  </div><!-- /scroll-area -->
-
-  <!-- BOTTOM BAR -->
+      </div>
+    </div>
+  </div>
   <div class="bottomnav">
     <div class="bnav-info">
       <span class="dot-live"></span>
       <span>Meta Ads · Windsor.ai</span>
     </div>
   </div>
-
-</div><!-- /app -->
-
-<!-- DATE MODAL -->
+</div>
 <div class="modal-bg" id="dateModal" onclick="if(event.target===this)closeDateModal()">
   <div class="modal">
     <div class="modal-title">Escolher período</div>
@@ -152,7 +117,229 @@
     </div>
   </div>
 </div>
+<script>
+// ── utils ──
+const f  = (n,d=2)=>isNaN(+n)||n==null?'—':(+n).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fi = n=>isNaN(+n)||n==null?'—':(+n).toLocaleString('pt-BR');
+const fr = n=>n&&+n?'R$\u00a0'+f(n):'—';
 
-<script src="/app.js"></script>
+const LABELS={last_7d:'7 dias',last_14d:'14 dias',last_30d:'30 dias',this_month:'Este mês',last_90d:'90 dias'};
+
+let sChart=null, pChart=null, deferredInstall=null;
+let activePreset='last_30d', activeCustomFrom='', activeCustomTo='';
+
+// ── aggregate helpers ──
+function aggCamps(data){
+  const m={};
+  data.forEach(r=>{
+    const k=r.campaign||'Sem nome';
+    if(!m[k]) m[k]={n:k,st:r.account_status||'—',sp:0,im:0,re:0,cl:0,pu:0,rs:0,rc:0};
+    m[k].sp+=+(r.spend||0); m[k].im+=+(r.impressions||0);
+    m[k].re+=+(r.reach||0); m[k].cl+=+(r.clicks||0); m[k].pu+=+(r.purchases||0);
+    if(r.purchase_roas){m[k].rs+=+(r.purchase_roas);m[k].rc++;}
+  });
+  return Object.values(m).sort((a,b)=>b.sp-a.sp);
+}
+
+function aggDate(data){
+  const m={};
+  data.forEach(r=>{
+    if(!r.date) return;
+    if(!m[r.date]) m[r.date]={sp:0,pu:0};
+    m[r.date].sp+=+(r.spend||0); m[r.date].pu+=+(r.purchases||0);
+  });
+  const dates=Object.keys(m).sort();
+  return {dates, spend:dates.map(d=>+m[d].sp.toFixed(2)), purch:dates.map(d=>m[d].pu)};
+}
+
+// ── render metrics ──
+function renderMetrics(data){
+  const t=data.reduce((a,r)=>({
+    sp:a.sp++(r.spend||0),im:a.im++(r.impressions||0),
+    re:a.re++(r.reach||0),cl:a.cl++(r.clicks||0),pu:a.pu++(r.purchases||0)
+  }),{sp:0,im:0,re:0,cl:0,pu:0});
+  const cpm=t.im?t.sp/t.im*1000:0, cpc=t.cl?t.sp/t.cl:0,
+        ctr=t.im?t.cl/t.im*100:0,  cpp=t.pu?t.sp/t.pu:0;
+  const cards=[
+    {icon:'💰',label:'Investido',     value:'R$\u00a0'+f(t.sp), sub:'Total no período'},
+    {icon:'👥',label:'Alcance',       value:fi(t.re),             sub:'Pessoas únicas'},
+    {icon:'👁',label:'Impressões',    value:fi(t.im),             sub:'Exibições'},
+    {icon:'🖱',label:'Cliques',       value:fi(t.cl),             sub:'CTR '+f(ctr,2)+'%'},
+    {icon:'🛒',label:'Compras',       value:fi(t.pu),             sub:'Conversões'},
+    {icon:'🧾',label:'Custo/Compra', value:fr(cpp),              sub:'Por conversão'},
+    {icon:'📊',label:'CPM',           value:fr(cpm),              sub:'Mil impressões'},
+    {icon:'🎯',label:'CPC',           value:fr(cpc),              sub:'Por clique'},
+  ];
+  const grid=document.getElementById('metricsGrid');
+  grid.innerHTML=cards.map(c=>`
+    <div class="mcard">
+      <div class="mc-icon">${c.icon}</div>
+      <div class="mc-label">${c.label}</div>
+      <div class="mc-value">${c.value}</div>
+      <div class="mc-sub">${c.sub}</div>
+    </div>`).join('');
+  setTimeout(()=>grid.querySelectorAll('.mcard').forEach((el,i)=>{
+    setTimeout(()=>el.classList.add('loaded'),i*60);
+  }),50);
+}
+
+// ── render table ──
+function renderTable(camps){
+  document.getElementById('campCount').textContent=camps.length+' campanhas';
+  document.getElementById('campBody').innerHTML=camps.map(c=>{
+    const cpm=c.im?c.sp/c.im*1000:0, cpc=c.cl?c.sp/c.cl:0,
+          ctr=c.im?c.cl/c.im*100:0,  cpp=c.pu?c.sp/c.pu:0,
+          roas=c.rc?c.rs/c.rc:0, on=c.st==='ACTIVE';
+    const roasClass=roas>=2?'roas-good':roas>0?'roas-ok':'';
+    return `<tr>
+      <td class="tname" title="${c.n}">${c.n}</td>
+      <td><span class="badge ${on?'badge-on':'badge-off'}">${on?'Ativa':'Pausada'}</span></td>
+      <td>${fr(c.sp)}</td><td>${fi(c.re)}</td><td>${fi(c.im)}</td>
+      <td>${fi(c.cl)}</td><td>${f(ctr,2)}%</td>
+      <td>${fr(cpm)}</td><td>${fr(cpc)}</td>
+      <td>${fi(c.pu)}</td><td>${fr(cpp)}</td>
+      <td class="${roasClass}">${roas?f(roas,2)+'x':'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── render charts ──
+function renderCharts(bd){
+  const lbs=bd.dates.map(d=>{const[,m,dy]=d.split('-');return`${dy}/${m}`;});
+  const gc='rgba(255,255,255,.04)', tc='#555';
+  const base={
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{
+      backgroundColor:'#1c1c1c',titleColor:'#f0f0f0',bodyColor:'#888',
+      borderColor:'#2e2e2e',borderWidth:1,padding:10,cornerRadius:8
+    }},
+    scales:{
+      x:{ticks:{color:tc,font:{size:10},maxTicksLimit:8,autoSkip:true},grid:{color:gc},border:{display:false}},
+      y:{ticks:{color:tc,font:{size:10}},grid:{color:gc},border:{display:false}}
+    }
+  };
+  if(sChart){sChart.destroy();sChart=null;}
+  if(pChart){pChart.destroy();pChart=null;}
+  sChart=new Chart(document.getElementById('spendChart'),{type:'line',data:{labels:lbs,datasets:[{
+    data:bd.spend,borderColor:'#F5A623',backgroundColor:'rgba(245,166,35,.07)',
+    fill:true,tension:.4,pointRadius:bd.dates.length>25?0:3,
+    borderWidth:2.5,pointBackgroundColor:'#F5A623',pointBorderColor:'#0d0d0d',pointBorderWidth:1.5
+  }]},options:{...base,scales:{...base.scales,y:{...base.scales.y,
+    ticks:{...base.scales.y.ticks,callback:v=>'R$'+Number(v).toLocaleString('pt-BR')}}}}});
+  pChart=new Chart(document.getElementById('purchChart'),{type:'bar',data:{labels:lbs,datasets:[{
+    data:bd.purch,backgroundColor:'rgba(245,166,35,.65)',
+    borderRadius:4,hoverBackgroundColor:'#F5A623'
+  }]},options:base});
+}
+
+// ── load data ──
+async function loadData(){
+  const btn=document.getElementById('refreshBtn');
+  btn.textContent='…'; btn.disabled=true;
+  document.getElementById('errBox').style.display='none';
+  document.getElementById('contentArea').style.display='none';
+  document.getElementById('loadingState').style.display='flex';
+
+  const TOKEN=window.__TOKEN__;
+  let url=`/api/data/${TOKEN}?`;
+  if(activeCustomFrom&&activeCustomTo&&activePreset==='custom'){
+    url+=`date_from=${activeCustomFrom}&date_to=${activeCustomTo}`;
+  } else {
+    url+=`date_preset=${activePreset}`;
+  }
+
+  try{
+    const res=await fetch(url);
+    const json=await res.json();
+    if(!res.ok) throw new Error(json.error||'Erro desconhecido');
+    const data=json.data||[];
+    if(!data.length) throw new Error('Sem dados nesse período. Verifique se o Meta Ads está conectado no Windsor.ai.');
+
+    // period label
+    if(activePreset==='custom'&&activeCustomFrom&&activeCustomTo){
+      document.getElementById('periodLabel').textContent=`${activeCustomFrom} → ${activeCustomTo}`;
+    } else {
+      document.getElementById('periodLabel').textContent=LABELS[activePreset]||activePreset;
+    }
+    const now=new Date();
+    document.getElementById('lastUpd').textContent=
+      now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+
+    renderMetrics(data);
+    renderTable(aggCamps(data));
+    renderCharts(aggDate(data));
+
+    document.getElementById('loadingState').style.display='none';
+    document.getElementById('contentArea').style.display='block';
+  }catch(e){
+    document.getElementById('loadingState').style.display='none';
+    document.getElementById('errTitle').textContent='Erro ao carregar';
+    document.getElementById('errMsg').textContent=e.message;
+    document.getElementById('errBox').style.display='block';
+  }
+  btn.textContent='↺'; btn.disabled=false;
+}
+
+// ── period tabs ──
+function setPreset(p,el){
+  if(p==='custom'){ openDateModal(); return; }
+  activePreset=p; activeCustomFrom=''; activeCustomTo='';
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  loadData();
+}
+
+// ── date modal ──
+function openDateModal(){
+  document.getElementById('dateModal').classList.add('open');
+  const today=new Date().toISOString().slice(0,10);
+  const ago30=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+  document.getElementById('mDateFrom').value=activeCustomFrom||ago30;
+  document.getElementById('mDateTo').value=activeCustomTo||today;
+}
+function closeDateModal(){
+  document.getElementById('dateModal').classList.remove('open');
+}
+function applyCustomDate(){
+  const df=document.getElementById('mDateFrom').value;
+  const dt=document.getElementById('mDateTo').value;
+  if(!df||!dt){ alert('Selecione as duas datas.'); return; }
+  activeCustomFrom=df; activeCustomTo=dt; activePreset='custom';
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tabCustom').classList.add('active');
+  closeDateModal();
+  loadData();
+}
+
+// ── PWA install ──
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault(); deferredInstall=e;
+  document.getElementById('installBanner').style.display='flex';
+});
+function installApp(){
+  if(!deferredInstall) return;
+  deferredInstall.prompt();
+  deferredInstall.userChoice.then(()=>{
+    deferredInstall=null;
+    document.getElementById('installBanner').style.display='none';
+  });
+}
+function dismissInstall(){
+  document.getElementById('installBanner').style.display='none';
+}
+
+// ── service worker ──
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
+}
+
+// ── init ──
+document.addEventListener('DOMContentLoaded', ()=>{
+  // set default active tab to match default preset
+  const defTab = document.querySelector(`.ptab[data-preset="${window.__PERIODO__}"]`);
+  if(defTab){ document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('active')); defTab.classList.add('active'); activePreset=window.__PERIODO__; }
+  loadData();
+});
+</script>
 </body>
 </html>
