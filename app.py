@@ -1,7 +1,7 @@
 import os, json, uuid, requests
-from flask import Flask, render_template, request, jsonify, redirect, abort, send_from_directory
+from flask import Flask, render_template, request, jsonify, redirect, abort, send_file
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.', static_folder='.')
 CLIENTS_FILE   = "clients.json"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "alpha@2024")
 
@@ -26,17 +26,21 @@ def manifest():
         "background_color": "#0d0d0d",
         "theme_color": "#F5A623",
         "orientation": "any",
-        "icons": [
-            {"src": "/static/icons/icon-192.png", "sizes": "192x192", "type": "image/png"},
-            {"src": "/static/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
-        ]
+        "icons": []
     })
 
 @app.route("/sw.js")
-def service_worker():
-    return send_from_directory("static/js", "sw.js", mimetype="application/javascript")
+def sw():
+    return send_file("sw.js", mimetype="application/javascript")
 
-# ── ADMIN ──
+@app.route("/app.css")
+def css():
+    return send_file("app.css", mimetype="text/css")
+
+@app.route("/app.js")
+def js():
+    return send_file("app.js", mimetype="application/javascript")
+
 @app.route("/admin", methods=["GET","POST"])
 def admin():
     if request.method == "POST":
@@ -59,7 +63,7 @@ def add_client():
     clients[token] = {"nome": nome, "api_key": api_key, "periodo": periodo}
     save_clients(clients)
     return render_template("admin.html", autenticado=True, clientes=clients, erro=None,
-                           sucesso=f"Cliente '{nome}' criado!", novo_token=token)
+                           sucesso=f"Cliente '{nome}' criado!")
 
 @app.route("/admin/delete/<token>", methods=["POST"])
 def delete_client(token):
@@ -69,7 +73,6 @@ def delete_client(token):
     save_clients(clients)
     return render_template("admin.html", autenticado=True, clientes=clients, erro=None, sucesso="Cliente removido.")
 
-# ── CLIENT APP ──
 @app.route("/c/<token>")
 def dashboard(token):
     clients = load_clients()
@@ -104,5 +107,4 @@ def api_data(token):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    print(f"\n✅  Alpha App rodando em http://localhost:{port}\n")
     app.run(host="0.0.0.0", port=port, debug=False)
