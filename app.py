@@ -1,7 +1,7 @@
 import os, json, uuid, requests
-from flask import Flask, render_template, request, jsonify, redirect, abort, send_file
+from flask import Flask, render_template, request, jsonify, redirect, abort
 
-app = Flask(__name__, template_folder='.', static_folder='.')
+app = Flask(__name__, template_folder='.', static_folder='.', static_url_path='')
 CLIENTS_FILE   = "clients.json"
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "alpha@2024")
 
@@ -17,29 +17,7 @@ def index(): return redirect("/admin")
 
 @app.route("/manifest.json")
 def manifest():
-    return jsonify({
-        "name": "Alpha Dashboard",
-        "short_name": "Alpha",
-        "description": "Dashboard Meta Ads — Assessoria Alpha",
-        "start_url": "/",
-        "display": "standalone",
-        "background_color": "#0d0d0d",
-        "theme_color": "#F5A623",
-        "orientation": "any",
-        "icons": []
-    })
-
-@app.route("/sw.js")
-def sw():
-    return send_file("sw.js", mimetype="application/javascript")
-
-@app.route("/app.css")
-def css():
-    return send_file("app.css", mimetype="text/css")
-
-@app.route("/app.js")
-def js():
-    return send_file("app.js", mimetype="application/javascript")
+    return jsonify({"name":"Alpha Dashboard","short_name":"Alpha","start_url":"/","display":"standalone","background_color":"#0d0d0d","theme_color":"#F5A623","icons":[]})
 
 @app.route("/admin", methods=["GET","POST"])
 def admin():
